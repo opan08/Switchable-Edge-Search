@@ -12,6 +12,13 @@ class Astar {
   public:
     Astar();
     Astar(int input_timeout);
+
+    /**
+     * @brief Construct a new Astar object
+     * 
+     * @param input_timeout 
+     * @param input_fast_version 是否使用快速版本的A*算法，true表示使用快速的A*算法(基于graph的搜索)，false表示使用完整的A*算法
+     */
     Astar(int input_timeout, bool input_fast_version);
     ADG startExplore(ADG &adg, int input_sw_cnt);
     int heuristic_graph(ADG &adg, vector<int> *ts, vector<int> *values);
@@ -77,6 +84,6 @@ class Astar {
     priority_queue<slow_Node*, vector<slow_Node*>, slow_Compare> slow_pq;
     int agentCnt = 0;
 
-    bool fast_version = false;
+    bool fast_version = false;//是否使用快速版本的A*算法，true表示使用快速的A*算法，false表示使用完整的A*算法
 };
 #endif

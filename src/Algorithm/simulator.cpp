@@ -2,7 +2,7 @@
 
 Simulator::Simulator(ADG input_adg) {
   adg = input_adg;
-  vector<int> init_states(get_agentCnt(adg), 0);
+  vector<int> init_states(get_agentCnt(adg), 0);//初始化每个agent的状态为0，也就是每个机器都没有沿着路径移动，都在路径起点
   states = init_states;
 }
 
@@ -11,17 +11,22 @@ Simulator::Simulator(ADG input_adg, vector<int> visited_states) {
   states = visited_states;
 }
 
+// 遍历每个agent，查看他们下一个状态的依赖是否都已经完成，如果完成则可以移动，否则不能移动
+// 输出movable: 表示agent能否移动的列表，如果movable[i] == 1，则agent i 能移动，否则不能移动
+// 返回timeSpent: 表示还有多少个机器人正在移动
 int Simulator::checkMovable(vector<int>& movable) {
   int timeSpent = 0;
   int agentCnt = get_agentCnt(adg);
   for (int agent = 0; agent < agentCnt; agent++) {
     int state = states[agent];
     if (state >= get_stateCnt(adg, agent) - 1) {
+      // 如果agent已经到达终点
       continue;
     }
     timeSpent += 1;
     int next_state = state + 1;
 
+    // 获取agent进入到下一个状态next_state的依赖（也就是adg中不可以交换的节点）
     vector<pair<int, int>> dependencies = get_nonSwitchable_inNeibPair(adg, agent, next_state);
     movable[agent] = 1;
     for (pair<int, int> dependency: dependencies) {
@@ -68,17 +73,24 @@ bool Simulator::incident_to_switchable(int *v_from, int *v_to) {
   return false;
 }
 
+// 遍历每个agent，查看他们下一个状态的依赖是否都已经完成，如果完成则可以移动，否则不能移动
+// 输出movable: 表示agent能否移动的列表，如果movable[i] == 1，则agent i 能移动，否则不能移动
+// 输出haventStop: 表示agent是否已经停止，如果还没有完成路径，则设置为1，否则设置为0
+// 返回timeSpent: 表示还有多少个机器人正在移动
 int Simulator::checkMovable(vector<int>& movable, vector<int>& haventStop) {
   int timeSpent = 0;
   int agentCnt = get_agentCnt(adg);
+  // 遍历每个agent，查看他们下一个状态的依赖是否都已经完成，如果完成则可以移动，否则不能移动
   for (int agent = 0; agent < agentCnt; agent++) {
     int state = states[agent];
     if (state >= get_stateCnt(adg, agent) - 1) {
+      // 如果agent已经到达终点
       continue;
     }
     timeSpent += 1;
     int next_state = state + 1;
 
+    // 获取agent进入到下一个状态next_state的依赖（也就是adg中不可以交换的节点）
     vector<pair<int, int>> dependencies = get_nonSwitchable_inNeibPair(adg, agent, next_state);
     movable[agent] = 1;
     haventStop[agent] = 1;
@@ -88,6 +100,7 @@ int Simulator::checkMovable(vector<int>& movable, vector<int>& haventStop) {
       
       if (dep_agent != agent) {
         if (dep_state > states[dep_agent]) {
+          // 如果其他agent的当前状态states[dep_agent]小于节点所依赖的状态，则不能移动
           movable[agent] = 0;
           break;
         }
@@ -97,6 +110,9 @@ int Simulator::checkMovable(vector<int>& movable, vector<int>& haventStop) {
   return timeSpent;
 }
 
+// 机器人单步仿真
+// 输入switchCheck：没用到
+// 返回timeSpent: 表示还有多少个机器人正在移动
 int Simulator::step(bool switchCheck) {
   int agentCnt = get_agentCnt(adg);
   vector<int> movable(agentCnt, 0);
@@ -167,14 +183,15 @@ int Simulator::print_soln(const char* outFileName) {
   return totalSpend;
 }
 
+// 进行仿真，返回完成的需要的总移动次数
 int Simulator::print_soln() {
   int totalSpend = 0;
   int stepSpend = 0;
 
-  stepSpend = step(false);
-  while (stepSpend != 0) {
+  stepSpend = step(false);//agent单步移动，返回多少个机器人正在移动
+  while (stepSpend != 0) {//循环，直到所有agent都停止移动
     totalSpend += stepSpend;
-    stepSpend = step(false);
+    stepSpend = step(false);//agent单步移动，返回多少个机器人正在移动
   }
   
   return totalSpend;

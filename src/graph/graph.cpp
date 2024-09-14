@@ -20,6 +20,7 @@ bool error_check_node_range(Graph& graph, int n1, int n2){
     return true;
 }
 
+// 创建一个新的graph，n为节点数
 Graph new_graph(int n){
     set<int>* type1GInNeighbors = new set<int>[n];
     set<int>* type1OutNeighbors = new set<int>[n];
@@ -37,6 +38,7 @@ Graph new_graph(int n){
     return graph;
 }
 
+// 往graph<0>中添加n1余n2的关系，n2依赖于n1
 void set_type1_edge(Graph& graph, int n1, int n2){
     int graph_size = get<3>(graph);
 
@@ -50,13 +52,14 @@ void set_type1_edge(Graph& graph, int n1, int n2){
         return;
     }
 
-    subGraph& type1G = get<0>(graph);
-    type1G.first[n1].insert(n2);
-    type1G.second[n2].insert(n1);
+    subGraph& type1G = get<0>(graph);//获取graph中的第一个subGraph
+    type1G.first[n1].insert(n2);//n1的出边是n2
+    type1G.second[n2].insert(n1);//n2的入边是n1
 
     return;
 }
 
+// 添加不可以交换的边
 void set_type2_nonSwitchable_edge(Graph& graph, int n1, int n2){
     int graph_size = get<3>(graph);
 
@@ -77,6 +80,7 @@ void set_type2_nonSwitchable_edge(Graph& graph, int n1, int n2){
     return;
 }
 
+// 添加可以交换的边
 void set_type2_switchable_edge(Graph& graph, int n1, int n2){
     int graph_size = get<3>(graph);
 
@@ -165,6 +169,8 @@ void rem_type2_nonSwitchable_neighborhood(Graph& graph, int n){
     return;
 }
 
+
+// 移除n1到n2的可交换边
 void rem_type2_switchable_edge(Graph& graph, int n1, int n2){
     int graph_size = get<3>(graph);
 
@@ -205,6 +211,7 @@ bool get_type1_edge(Graph& graph, int n1, int n2){
     return result;
 }
 
+// 判断n1到n2是否存在不可交换的边
 bool get_type2_nonSwitchable_edge(Graph& graph, int n1, int n2){
     if(error_check_node_range(graph, n1, n2) == false){
         return false;
@@ -217,6 +224,7 @@ bool get_type2_nonSwitchable_edge(Graph& graph, int n1, int n2){
     return result;
 }
 
+// 判断n1到n2是否存在可交换的边
 bool get_type2_switchable_edge(Graph& graph, int n1, int n2){
     if(error_check_node_range(graph, n1, n2) == false){
         return false;
@@ -229,6 +237,7 @@ bool get_type2_switchable_edge(Graph& graph, int n1, int n2){
     return result;
 }
 
+// 判断n1到n2是否存在边（包括type1和type2）
 bool get_edge(Graph& graph, int n1, int n2){
 
     bool result = get_type1_edge(graph, n1, n2);
@@ -243,6 +252,7 @@ bool get_edge(Graph& graph, int n1, int n2){
     return result;
 }
 
+// 获取所有从n出发(依赖于n)的不可交换的节点（包括type1边和type2不可交换边）
 set<int> get_nonSwitchable_outNeib(Graph& graph, int n){
     subGraph& type1G = get<0>(graph);
     subGraph& type2NSG = get<1>(graph);
@@ -254,6 +264,8 @@ set<int> get_nonSwitchable_outNeib(Graph& graph, int n){
 
 }
 
+// 获取graph中所有进入n的type1的节点和不可交换的type2的节点
+// 返回的是所有节点的set
 set<int> get_nonSwitchable_inNeib(Graph& graph, int n){
     subGraph& type1G = get<0>(graph);
     subGraph& type2NSG = get<1>(graph);
@@ -302,10 +314,12 @@ set<int> get_inNeighbors(Graph& graph, int n){
     return result;
 }
 
+// 将graph中，所有可交换的边加入不可交换的边中，并且清空可交换的边
 void set_switchable_nonSwitchable(Graph& graph){
     int graph_size = get<3>(graph);
-    subGraph& graph2NS = get<1>(graph);
-    subGraph& graph2S = get<2>(graph);
+    subGraph& graph2NS = get<1>(graph);//adg中不可交换的边
+    subGraph& graph2S = get<2>(graph);//adg中可交换的边
+    // 遍历每个节点，将所有可交换的边加入不可交换的边中，并且清空可交换的边
     for(int i = 0; i < graph_size; i++){
         for(auto itr = graph2S.first[i].begin(); itr != graph2S.first[i].end(); itr++){
             graph2NS.first[i].insert(*itr);

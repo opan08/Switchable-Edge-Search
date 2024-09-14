@@ -80,18 +80,18 @@ tuple<int, int, int> Astar::branch(Graph &graph, vector<int> *values) {
 }
 
 void Astar::print_stats(ofstream &outFile) {
-    outFile << explored_node_cnt << "," << 
-    pruned_node_cnt << "," << 
-    added_node_cnt << "," << 
-    vertex_cnt << "," << 
-    sw_edge_cnt << "," << 
-    heuristicT.count() << "," << 
-    branchT.count() << "," <<
-    sortT.count() << "," << 
-    pqT.count() << "," << 
-    copy_free_graphsT.count() << "," << 
-    termT.count() << "," << 
-    dfsT.count() << endl;
+    outFile << explored_node_cnt << "," << std::endl <<
+    "explored_node_cnt =" << pruned_node_cnt << "," << std::endl <<
+    "added_node_cnt =" << added_node_cnt << "," << std::endl <<
+    "vertex_cnt =" << vertex_cnt << "," << std::endl <<
+    "sw_edge_cnt =" << sw_edge_cnt << "," << std::endl <<
+    "heuristic_time =" << heuristicT.count() << "," << std::endl <<
+    "branchT.count() =" << branchT.count() << "," << std::endl <<
+    "sortT.count() =" << sortT.count() << "," << std::endl <<
+    "pqT.count() =" << pqT.count() << "," << std::endl <<
+    "copy_free_graphsT.count() =" << copy_free_graphsT.count() << "," << std::endl <<
+    "termT.count() =" << termT.count() << "," << std::endl <<
+    "dfsT.count() =" << dfsT.count() << endl;
 }
 
 void Astar::print_stats() {
@@ -114,11 +114,12 @@ ADG Astar::exploreNode() {
     explored_node_cnt += 1;
 
     if (explored_node_cnt % 1000000 == 0) {
+      // 每一百万个节点输出一次
       std::cout << explored_node_cnt << "\n";
     }
 
     auto start_pq_pop = high_resolution_clock::now();
-    Node* node = pq.top();
+    Node* node = pq.top();//取出顶部的节点
     pq.pop();
     auto end_pq_pop = high_resolution_clock::now();
     pqT += duration_cast<microseconds>(end_pq_pop - start_pq_pop);
@@ -504,8 +505,9 @@ ADG Astar::startExplore(ADG &adg, int input_sw_cnt) {
   sw_edge_cnt = input_sw_cnt;
   // std::cout << "vertex_cnt = " << vertex_cnt << ", sw_edge_cnt = " << sw_edge_cnt << "\n";
   if (fast_version) {
+    // 基于graph的astar算法
     agentCnt = get_agentCnt(adg);
-    Graph &graph = get<0>(adg);
+    Graph &graph = get<0>(adg);//adg的图
 
     for (int agent = 0; agent < agentCnt; agent ++) {
       int current = compute_vertex(get<2>(adg), agent, 0);

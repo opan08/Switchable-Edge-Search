@@ -6,6 +6,7 @@
 #include "../types.h"
 #include "ADG_utilities.h"
 
+// ADG算法出处《Persistent and robust execution of MAPF schedules in warehouses》
 using namespace std;
 
 bool same_locations(Location location1, Location location2);

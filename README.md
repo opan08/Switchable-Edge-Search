@@ -4,6 +4,8 @@ This repository is the implementation of **A Real-Time Rescheduling Algorithm fo
 
 The source code for K-Robust CBS is available at https://github.com/nobodyczcz/Lazy-Train-and-K-CBS. The "wait-on-start" branch supports the delayed situation that we considered.
 
+**这个代码里面有ADG的实现，可以参考**
+
 Build:
 
 ```bash
@@ -31,7 +33,9 @@ Example:
 
 The above command reads an example path, uses a delay probability = 1 percent and a delay length range = [10, 20], and creates two .csv files to record the output stats and two .txt files to record the information about the delay.
 
-The stats columns are (from left to right):
+上述命令读取一个示例路径，使用延迟概率为1%，延迟时长范围为[10, 20]，并创建两个.csv文件记录输出统计信息，以及两个.txt文件记录延迟的相关信息。
+
+The stats columns are (from left to right) 状态文件中每一列的含义:
 
 runtime || runtime + the time for constructing the TPG || original total cost of the TPG || replanned total cost || original remaining cost of the TPG (the parts after the delay) || replanned remaining cost
 
